@@ -1,0 +1,20 @@
+([ ] undone [?] not necessary, undone [~] in-development [x] working (not broken))
+
+[x] tokenizer
+  [x] using (ice-9 peg)
+  [ ] add source-location metadata
+
+[x] parser
+  [x] using (system base lalr)
+  [ ] investigate shift/reduce and reduce/reduce conflicts, make improvents
+  [ ] error reporting
+  [?] don't require reading in entire port before parsing
+
+[ ] compiler
+  [ ] compile to guile tree-il
+  [?] optimizations
+
+[ ] standard library and basic functions
+
+[?] pretty-printer for values
+[?] pretty-printer for code
