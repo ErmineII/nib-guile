@@ -24,7 +24,6 @@
 (define-peg-pattern dot all (ignore "."))
 (define-peg-pattern open-paren all (ignore "("))
 (define-peg-pattern close-paren all (ignore ")"))
-(define-peg-pattern semicolon all (ignore ";"))
 (define-peg-pattern colon all (ignore ":"))
 (define-peg-pattern assign all (ignore (and dot colon)))
 
@@ -38,8 +37,7 @@
                         character
                         dot
                         string-token
-                        number
-                        semicolon))
+                        number))
 (define-peg-pattern tokens all (* (and ws token)))
 
 (define (fix tree)

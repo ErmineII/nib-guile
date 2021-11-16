@@ -21,7 +21,7 @@
    ;             ;; conflicts is
    ;; terminal token types
    (open-paren close-paren name-token assign double-colon colon character dot
-               string-token number semicolon)
+               string-token number)
    (expression (subexpression) : $1
                (assignments subexpression) : `(assign ,$1 ,$2))
    (assignments (subexpression assign name assignments) : (cons (cons $1 $3) $4)
@@ -33,11 +33,7 @@
    (application (function arguments) : `(application ,$1 ,$2))
    (function (parenthesis) : $1
              (name) : $1)
-   (parenthesis (open-paren contents close-paren) : $2)
-   (contents (array) : `(array ,$1)
-             (expression) : $1)
-   (array (expression semicolon array) : (cons $1 $3)
-          (expression semicolon) : (list $1))
+   (parenthesis (open-paren expression close-paren) : $2)
    (arguments (argument arguments) : (cons $1 $2)
               () : '())
    (argument (colon function) : $2
