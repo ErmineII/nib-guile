@@ -1,7 +1,9 @@
 (define-module (language nib parser)
   #:use-module (language nib lexer)
   #:use-module (system base lalr)
-  #:export (parse-nib))
+  #:export (parse-nib implicit-value))
+
+(define implicit-value (make-symbol "implicit-value"))
 
 (define (parse-nib tokens)
   (let ((parser (make-parser)))
@@ -17,18 +19,20 @@
 
 (define (make-parser)
   (lalr-parser
-   ; (expect: 5) ;; I don't know what the best way to resolve these Shift/Reduce
-   ;             ;; conflicts is
    ;; terminal token types
    (open-paren close-paren name-token assign double-colon colon character dot
                string-token number semicolon)
-   (expression (subexpression) : $1
-               (assignments subexpression) : `(assign ,$1 ,$2))
-   (assignments (subexpression assign target semicolon assignments) : (cons (list $1 $3 #t) $5)
-                (subexpression assign target assignments) : (cons (list $1 $3 #f) $4)
-                (subexpression assign name) : (list (cons $1 $3)))
+   (expression (assignments subexpression) : (if (null? $1)
+                                               $2
+                                               `(assign ,(reverse $1) ,$2)))
+   (assignments (assignments assignment) : (cons $2 $1)
+                () : '())
+   (assignment (subexpression assign target maybe-semicolon) : (list $1 $3 $4))
+   (maybe-semicolon (semicolon) : #t () : #f)
+   (target (name-token colon target) : (cons (string->symbol $1) $3)
+           (name-token) : (list (string->symbol $1)))
    (subexpression (value applications) : `(expr ,$1 ,$2)
-                  (applications) : `(expr #f ,$1))
+                  (applications) : `(expr (delay (name () ,implicit-value)) ,$1))
    (applications (application applications) : (cons $1 $2)
                  () : '())
    (application (function arguments) : `(application ,$1 ,$2))
