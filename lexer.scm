@@ -11,7 +11,7 @@
 (define-peg-pattern exponent body (and (or "E" "e") (? (or "-" "+")) (+ digit)))
 (define-peg-pattern number all (and integer (? fraction) (? exponent)))
 
-(define-peg-pattern name-token all (peg "ws !number (![:;()`\". \t\n] .)+"))
+(define-peg-pattern name-token all (peg "ws !number (![:()`\". \t\n] .)+"))
 (define-peg-pattern double-colon all (ignore "::"))
 
 (define-peg-pattern ign-quote none "\"")
@@ -26,7 +26,6 @@
 (define-peg-pattern close-paren all (ignore ")"))
 (define-peg-pattern colon all (ignore ":"))
 (define-peg-pattern assign all (ignore (and dot colon)))
-(define-peg-pattern semicolon all (ignore ";"))
 
 (define-peg-pattern token body
                     (or open-paren
@@ -38,8 +37,7 @@
                         character
                         dot
                         string-token
-                        number
-                        semicolon))
+                        number))
 (define-peg-pattern tokens all (* (and ws token)))
 
 (define (fix tree)
