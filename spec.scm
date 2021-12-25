@@ -11,7 +11,7 @@
   #:parser parse-nib
 
   ;; for development
-  #:evaluator	(lambda (x module) (compile-tree-il x))
+  #:evaluator	(lambda (x module) (compile-item x '()))
   ;#:evaluator (lambda (x module) x)
 
   ;#:compilers   `((tree-il . ,compile-tree-il))

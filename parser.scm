@@ -3,7 +3,7 @@
   #:use-module (system base lalr)
   #:export (parse-nib implicit-value))
 
-(define implicit-value (make-symbol "implicit-value"))
+(define implicit-value (gensym " "))
 
 (define (parse-nib tokens)
   (let ((parser (make-parser)))

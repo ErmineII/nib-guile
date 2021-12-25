@@ -26,9 +26,9 @@
      (let ((name-gensym (gensym)))
        `(let (,name) (,name-gensym) (,(compile-item value lexicals))
           ,(compile-item scope (acons name name-gensym lexicals)))))
-    (('parameters (names ...) body)
+    (('parameters (names ..1) body)
      (let* ((names (cons implicit-value names))
-            (gensyms (map gensym names)))
+            (gensyms (map (lambda (n) (gensym (symbol->string n))) names)))
        `(letrec*
           ,names
           ,gensyms
@@ -64,6 +64,4 @@
     (_ (error "invalid parse tree" expr))))
 
 (define (compile-tree-il expr env opts)
-  (values (compile-item expr '()) env env))
-;; (define (compile-tree-il expr env opts)
-;;  (values (parse-tree-il (compile-item expr '())) env env))
+  (values (parse-tree-il (compile-item expr '())) env env))
