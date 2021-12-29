@@ -14,14 +14,24 @@
   (match
     expr
     (('sub-expr start-value (('application functions arg-lists) ...))
-     (fold (lambda (func args current-value)
+     (fold
+       (lambda (func args current-value)
+         (let ((compiled-args
+                  (map (lambda (arg) (compile-item arg lexicals)) args)))
+           (if (eq? (car func) 'name)
              `(call (@ (language nib call) call)
                     ,(compile-item func lexicals)
                     ,current-value
-                    ,@(map (lambda (arg) (compile-item arg lexicals)) args)))
-           (compile-item start-value lexicals)
-           functions
-           arg-lists))
+                    ,@compiled-args)
+             (let ((the-gensym (gensym " ")))
+               `(let (,implicit-value) (,the-gensym)
+                     ((call (@@ (guile) cons*) ,current-value ,@compiled-args))
+                     ,(compile-item func (acons implicit-value
+                                                the-gensym
+                                                lexicals)))))))
+       (compile-item start-value lexicals)
+       functions
+       arg-lists))
     (('assign value name scope)
      (let ((name-gensym (gensym)))
        `(let (,name) (,name-gensym) (,(compile-item value lexicals))
@@ -40,10 +50,6 @@
              (cons (length names)
                    (compile-item `(name () ,implicit-value) lexicals)))
           ,(compile-item body (append (map cons names gensyms) lexicals)))))
-    (('application-argument function)
-     `(call (const ,call)
-            ,(compile-item function lexicals)
-           ,(compile-item `(name () ,implicit-value) lexicals)))
     (('name (qualifiers ...) name)
      ;; TODO: handle qualifiers
      (let ((the-gensym (assq-ref lexicals name)))
@@ -53,7 +59,7 @@
     (('delay subexpr)
      (if (and (pair? subexpr) (eq? (car subexpr) 'name))
        (compile-item subexpr lexicals)
-       (let ((the-gensym (gensym "initial-value")))
+       (let ((the-gensym (gensym " ")))
          `(lambda ()
             (lambda-case (((,implicit-value) #f #f #f () (,the-gensym))
                           ,(compile-item subexpr (acons implicit-value

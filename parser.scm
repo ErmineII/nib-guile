@@ -48,7 +48,8 @@
              (name) : $1)
    (arguments (argument arguments) : (cons $1 $2)
               () : '())
-   (argument (colon function) : `(application-argument ,$2)
+   (argument (colon function) : `(sub-expr (delay (name () ,implicit-value))
+                                           ((application ,$2 ())))
              (colon value) : $2
              (value) : $1)
    (name (qualifiers name-token) : `(name ,$1 ,$2))
