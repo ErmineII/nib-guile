@@ -32,7 +32,10 @@
    ;; terminal token types
    (open-paren close-paren name-token assign double-colon colon character dot
                string-token number dollar-sign)
-   (expression (parameters scope) : (if (null? $1) $2 `(parameters ,$1 ,$2)))
+   (expression (double-colon names) : `(module ,$2)
+               (parameters scope) : (if (null? $1) $2 `(parameters ,$1 ,$2)))
+   (names (name colon names) : (cons $1 $3)
+          (name) : (list $1))
    (parameters (colon name-token parameters) : (cons $2 $3)
                () : '())
    (scope (subexpression assign name-token scope) : `(assign ,$1 ,$3 ,$4)
