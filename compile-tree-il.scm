@@ -25,7 +25,7 @@
                     ,@compiled-args)
              (let ((the-gensym (gensym " ")))
                `(let (,implicit-value) (,the-gensym)
-                     ((call (@@ (guile) cons*) ,current-value ,@compiled-args))
+                     ((call (@ (guile) cons*) ,current-value ,@compiled-args))
                      ,(compile-item func (acons implicit-value
                                                 the-gensym
                                                 lexicals)))))))
@@ -46,7 +46,7 @@
              (lambda (x) (= (car x) 0))
              (lambda (x) `(call (@@ (guile) car) ,(cdr x)))
              (lambda (x) (cons (- (car x) 1)
-                               `(call (@@ (guile) cdr) ,(cdr x))))
+                               `(call (@ (guile) cdr) ,(cdr x))))
              (cons (length names)
                    (compile-item `(name () ,implicit-value) lexicals)))
           ,(compile-item body (append (map cons names gensyms) lexicals)))))
@@ -65,6 +65,26 @@
                           ,(compile-item subexpr (acons implicit-value
                                                         the-gensym
                                                         lexicals))))))))
+    (('module (names ...))
+     (let ((gensym-gensym (gensym))
+           (module-gensym (gensym)))
+     `(let (the-gensym) (,gensym-gensym) ((call (@ (guile) gensym)))
+        (let (the-module) (,module-gensym)
+             ((call (@ (guile) resolve-module)
+                    (call (@ (guile) list)
+                          (const language)
+                          (const nib)
+                          (lexical the-gensym ,gensym-gensym))))
+          ,(fold
+             (lambda (name code) 
+               `(seq
+                 (call (@ (guile) module-define!)
+                       (lexical the-module ,module-gensym)
+                       (const ,(caddr name))
+                       ,(compile-item name lexicals))
+                 ,code))
+            `(lexical the-module ,module-gensym)
+            names)))))
     ((or (? char?) (? string?) (? number?))
      `(const ,expr))
     (_ (error "invalid parse tree" expr))))
