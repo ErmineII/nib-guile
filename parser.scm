@@ -1,7 +1,8 @@
 (define-module (language nib parser)
   #:use-module (language nib lexer)
+  #:use-module (language nib implicit-value)
   #:use-module (system base lalr)
-  #:export (parse-nib implicit-value))
+  #:export (parse-nib))
 
 (define implicit-value (gensym " "))
 

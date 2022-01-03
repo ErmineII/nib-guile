@@ -4,7 +4,7 @@
   #:use-module (srfi srfi-1)
 
   #:use-module (language tree-il)
-  #:use-module (language nib parser)
+  #:use-module (language nib implicit-value)
   #:use-module (language nib call)
 
   #:export (compile-item compile-tree-il yes))

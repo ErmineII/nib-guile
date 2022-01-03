@@ -6,12 +6,13 @@
 
 [x] parser
   [x] using (system base lalr)
-  [ ] investigate shift/reduce and reduce/reduce conflicts, make improvents
+  [x] investigate shift/reduce and reduce/reduce conflicts, make improvents
   [ ] error reporting
   [?] don't require reading in entire port before parsing
 
-[ ] compiler
-  [ ] compile to guile tree-il
+[~] compiler
+  [x] compile to guile tree-il
+  [~] handle full programs
   [?] optimizations
 
 [ ] standard library and basic functions
