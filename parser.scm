@@ -46,7 +46,7 @@
      (subexpression) : $1)
    (subexpression
      (value applications) : `(sub-expr ,$1 ,$2)
-     (applications) : `(sub-expr (delay (name () ,implicit-value)) ,$1))
+     (applications) : `(sub-expr (delay (name (,implicit-value))) ,$1))
    (applications
      (application applications) : (cons $1 $2)
      () : '())
@@ -60,15 +60,15 @@
      (argument arguments) : (cons $1 $2)
      () : '())
    (argument
-     (colon function) : `(sub-expr (delay (name () ,implicit-value))
+     (colon function) : `(sub-expr (delay (name (,implicit-value)))
                                    ((application ,$2 ())))
      (colon value) : $2
      (value) : $1)
    (name
-     (qualifiers name-token) : `(name ,$1 ,$2))
-   (qualifiers
-     (qualifiers name-token double-colon) : (cons $2 $1)
-     () : '())
+     (path) : `(name ,$1))
+   (path
+     (name-token double-colon path) : (cons $1 $3)
+     (name-token) : (list $1))
    (value
      (number) : $1
      (string-token) : $1

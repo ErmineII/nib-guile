@@ -21,8 +21,9 @@
            (if (eq? (car func) 'name)
              `(call (@ (language nib call) call)
                     ,(compile-item func lexicals)
-                    ,current-value
-                    ,@compiled-args)
+                    (call (@ (guile) cons*)
+                          ,current-value
+                          ,@compiled-args))
              (let ((the-gensym (gensym " ")))
                `(let (,implicit-value) (,the-gensym)
                      ((call (@ (guile) cons*) ,current-value ,@compiled-args))
@@ -48,14 +49,19 @@
              (lambda (x) (cons (- (car x) 1)
                                `(call (@ (guile) cdr) ,(cdr x))))
              (cons (length names)
-                   (compile-item `(name () ,implicit-value) lexicals)))
+                   (compile-item `(name (,implicit-value)) lexicals)))
           ,(compile-item body (append (map cons names gensyms) lexicals)))))
-    (('name (qualifiers ...) name)
-     ;; TODO: handle qualifiers
-     (let ((the-gensym (assq-ref lexicals name)))
-       (if the-gensym
-         `(lexical ,name ,the-gensym)
-         `(toplevel ,name))))
+    (('name (variable fields ...))
+     (fold
+       (lambda (field module)
+         `(call (@ (guile) module-ref)
+                ,module
+                (const ,field)))
+       (let ((the-gensym (assq-ref lexicals variable)))
+         (if the-gensym
+           `(lexical ,variable ,the-gensym)
+           `(toplevel ,variable)))
+       fields))
     (('delay subexpr)
      (if (and (pair? subexpr) (eq? (car subexpr) 'name))
        (compile-item subexpr lexicals)

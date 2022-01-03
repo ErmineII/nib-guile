@@ -1,5 +1,5 @@
 (define-module (language nib call)
   #:export (call))
 
-(define (call fn . args)
-  (list 'call fn args))
+(define (call fn args)
+  (cons* 'call fn args))
