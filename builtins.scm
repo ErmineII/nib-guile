@@ -1,0 +1,13 @@
+(define-module (language nib builtins)
+  #:use-module (language nib io-state)
+  #:re-export ((car . #{[}#) (cdr . #{]}#))
+  #:export ((add . +) (sub . -) (id . /) (swap . \) puts))
+
+(define (add a) (+ (car a) (cdr a)))
+(define (sub a) (- (car a) (cdr a)))
+(define (id a) a)
+(define (swap a) (cons (cdr a) (car a)))
+(define (puts a)
+  (with-state-change (car a)
+    (display (cdr a))
+    (newline)))

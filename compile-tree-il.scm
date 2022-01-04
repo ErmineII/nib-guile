@@ -5,7 +5,7 @@
 
   #:use-module (language tree-il)
   #:use-module (language nib implicit-value)
-  #:use-module (language nib call)
+  #:use-module (language nib generic)
 
   #:export (compile-item compile-tree-il yes))
 
@@ -19,7 +19,7 @@
          (let ((compiled-args
                   (map (lambda (arg) (compile-item arg lexicals)) args)))
            (if (eq? (car func) 'name)
-             `(call (@ (language nib call) call)
+             `(call (@ (language nib generic) call)
                     ,(compile-item func lexicals)
                     (call (@ (guile) cons*)
                           ,current-value
@@ -95,5 +95,15 @@
      `(const ,expr))
     (_ (error "invalid parse tree" expr))))
 
+(define (with-prelude body)
+  `(seq
+    (call (@ (guile) set-current-module)
+      (call (@ (guile) resolve-module)
+        (const (language nib modules default))))
+    (seq
+      (define ,implicit-value
+        (call (@ (language nib io-state) io-state)))
+      ,body)))
+
 (define (compile-tree-il expr env opts)
-  (values (parse-tree-il (compile-item expr '())) env env))
+  (values (parse-tree-il (with-prelude (compile-item expr '()))) env env))

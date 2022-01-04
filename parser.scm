@@ -4,8 +4,6 @@
   #:use-module (system base lalr)
   #:export (parse-nib))
 
-(define implicit-value (gensym " "))
-
 (define (parse-nib tokens)
   (let ((parser (make-parser)))
     (parser (lambda ()  ;; lexical analyzer

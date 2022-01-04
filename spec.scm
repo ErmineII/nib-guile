@@ -2,6 +2,7 @@
   #:use-module (language nib compile-tree-il)
   #:use-module (language nib lexer)
   #:use-module (language nib parser)
+  #:use-module (language nib modules default)
   #:use-module (system base language)
   #:export (nib))
 
@@ -11,9 +12,12 @@
   #:parser parse-nib
 
   ;; for development
-  #:evaluator	(lambda (x module) (compile-item x '()))
+  ;#:evaluator (lambda (x module) (compile-item x '()))
   ;#:evaluator (lambda (x module) x)
 
-  ;#:compilers   `((tree-il . ,compile-tree-il))
+  #:compilers   `((tree-il . ,compile-tree-il))
+
+  #:make-default-environment
+    (lambda () (resolve-module '(language nib modules default)))
 
   #:printer	write)
