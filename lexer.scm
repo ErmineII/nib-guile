@@ -54,6 +54,6 @@
 
 (define (lex-nib port)
   (let ((contents (get-string-all port)))
-    (if (eof-object? contents)
-      '()
+    (if (string-null? contents)
+      (read-char port) ;; eof-object
       (lex-nib-string contents))))
