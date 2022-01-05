@@ -45,7 +45,10 @@
           ,gensyms
           ,(unfold ;; state value: (n . (cdr (cdr ... implicit-value ...)))
              (lambda (x) (= (car x) 0))
-             (lambda (x) `(call (@@ (guile) car) ,(cdr x)))
+             (lambda (x)
+               (if (= (car x) 1)
+                 (cdr x)
+                 `(call (@@ (guile) car) ,(cdr x))))
              (lambda (x) (cons (- (car x) 1)
                                `(call (@ (guile) cdr) ,(cdr x))))
              (cons (length names)
